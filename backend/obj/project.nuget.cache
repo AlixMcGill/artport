@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "/YUmvMyKCd8=",
+  "success": true,
+  "projectFilePath": "/home/alix/dev/artport/backend/backend.csproj",
+  "expectedPackageFiles": [
+    "/home/alix/.nuget/packages/microsoft.aspnetcore.openapi/10.0.3/microsoft.aspnetcore.openapi.10.0.3.nupkg.sha512",
+    "/home/alix/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/home/alix/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

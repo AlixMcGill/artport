@@ -1,0 +1,6 @@
+/home/alix/dev/artport/backend/obj/Debug/net9.0/rpswa.dswa.cache.json
+/home/alix/dev/artport/backend/obj/Debug/net9.0/backend.GeneratedMSBuildEditorConfig.editorconfig
+/home/alix/dev/artport/backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
+/home/alix/dev/artport/backend/obj/Debug/net9.0/backend.AssemblyInfo.cs
+/home/alix/dev/artport/backend/obj/Debug/net9.0/backend.csproj.CoreCompileInputs.cache
+/home/alix/dev/artport/backend/obj/Debug/net9.0/backend.MvcApplicationPartsAssemblyInfo.cache

@@ -1,2 +1,31 @@
-/backend/bin*
-/backend/obj*
+# .NET build outputs
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+
+# ASP.NET Core secrets (IMPORTANT)
+secrets.json
+appsettings.*.json
+
+# EF Core migrations local artifacts (optional but common)
+*.db
+*.sqlite
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+
+# publish output
+publish/

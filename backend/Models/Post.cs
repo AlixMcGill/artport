@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ArtPort.Models
+namespace Backend.Models
 {
     public class Post
     {

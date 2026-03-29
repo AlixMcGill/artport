@@ -131,3 +131,12 @@
 /home/alix/dev/artport/backend/obj/Debug/net10.0/backend.genruntimeconfig.cache
 /home/alix/dev/artport/backend/obj/Debug/net10.0/ref/backend.dll
 /home/alix/dev/artport/backend/bin/Debug/net10.0/secrets.json
+/home/alix/dev/artport/backend/bin/Debug/net10.0/BCrypt.Net-Next.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.Abstractions.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.Logging.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
+/home/alix/dev/artport/backend/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll

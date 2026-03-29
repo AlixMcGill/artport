@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ArtPort.Models
+namespace Backend.Models
 {
     public class User
     {
@@ -11,6 +11,9 @@ namespace ArtPort.Models
 
         [Required, MaxLength(255)]
         public string Email { get; set; } = null!;
+
+        [Required, MaxLength(20)]
+        public string Username {get; set;} = null!;
 
         [Required, MaxLength(255)]
         public string PassHash { get; set; } = null!;

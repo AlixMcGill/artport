@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ArtPort.Models
+namespace Backend.Models
 {
     public class Like
     {

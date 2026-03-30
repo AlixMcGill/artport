@@ -75,10 +75,18 @@ public class AuthController : ControllerBase {
         // generate jwt token for future authorization
         var token = _jwtService.GenerateToken(user);
 
+        Response.Cookies.Append("auth_token", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddHours(2)
+
+        });
+
         // username and password were correct. Request successful
         return Ok(new
         {
-            token,
             userId = user.Id
         });
     }

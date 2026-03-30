@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export default function Home() {
     const [email, setEmail] = useState("");
@@ -13,11 +14,12 @@ export default function Home() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch("http://localhost:5094/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({email, password}),
             });
 
@@ -27,9 +29,8 @@ export default function Home() {
 
         const data = await res.json();
 
-        localStorage.setItem("token", data.token);
-
-        Navigate("/dashboard")
+        console.log(data)
+        localStorage.setItem("id", data.userId);
 
         } catch (err: any) {
             setError(err.message || "Login Failed");

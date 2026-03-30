@@ -45,6 +45,18 @@ builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -73,11 +85,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseCors("frontend");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();
+
+public partial class Program {}

@@ -8,6 +8,8 @@ export default function Home() {
     const [error, setError] = useState<string | null>("");
     const [loading, setLoading] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -31,6 +33,7 @@ export default function Home() {
 
         console.log(data)
         localStorage.setItem("id", data.userId);
+        navigate("/dashboard");
 
         } catch (err: any) {
             setError(err.message || "Login Failed");
@@ -65,6 +68,9 @@ export default function Home() {
                         {loading ? "Loading..." : "Login"}
                     </button>
             </form>
+            <div>
+                <p>Don't have an account? <a href="/register">Create one</a></p>
+            </div>
         </>
     )
 }

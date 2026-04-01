@@ -70,9 +70,12 @@ export default function CreateAccount() {
                 {error && <p style={{color: "red"}}>{error}</p>}
                 <br/>
                 <button type="submit" disabled={loading}> 
-                    {loading ? "Loading..." : "Login"}
+                    {loading ? "Loading..." : "Create Account"}
                 </button>
             </form>
+            <div>
+                <p>Already have an account? <a href="/">Login</a></p>
+            </div>
         </>
     );
 }

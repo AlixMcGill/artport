@@ -1,8 +1,9 @@
 # .NET build outputs
 **/bin/
 **/obj/
-backend/bin/
-backend/obj/
+backend/bin
+backend/obj
+backend/wwwroot/uploads
 
 # User-specific files
 *.user

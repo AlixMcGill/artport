@@ -20,6 +20,8 @@ namespace Backend.Data
                 entity.Property(u => u.PassHash).HasColumnName("password_hash");
                 entity.Property(u => u.CreatedAt).HasColumnName("created_at");
                 entity.Property(u => u.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(u => u.Bio).HasColumnName("bio");
+                entity.Property(u => u.ProfilePictureUrl).HasColumnName("profile_picture_url");
             });
         }
         public DbSet<User> Users { get; set; } = null!;

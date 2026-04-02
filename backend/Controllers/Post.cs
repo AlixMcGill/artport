@@ -3,6 +3,7 @@ using System.IO;
 using Backend.Data;
 using Backend.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +14,13 @@ namespace Backend.Controllers;
 public class PostController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-
     private readonly FileStorageService _fileStorage;
-    public PostController(ApplicationDbContext context, FileStorageService fileStorage)
+    private readonly PostService _postService;
+    public PostController(ApplicationDbContext context, FileStorageService fileStorage, PostService postService)
     {
         _context = context;
         _fileStorage = fileStorage;
+        _postService = postService;
     }
 
     // Incoming POST body for creating a post.
@@ -109,33 +111,21 @@ public class PostController : ControllerBase
     // The server saves the file to wwwroot/uploads and sets photoUrl from the saved path.
     [Authorize]
     [HttpPost("")]
-    public async Task<IActionResult> Posts([FromForm] CreatePostRequest request, [FromForm] IFormFile file)
+    public async Task<IActionResult> Posts([FromForm] CreatePostRequestDto request)
     {
-        var photoUrl = await _fileStorage.Create(file);
-
         var userId = User.GetUserId();
 
-        var post = new Backend.Models.Post
-        {
-            UserId = userId,
-            PhotoUrl = photoUrl,
-            Caption = string.IsNullOrWhiteSpace(request.Caption) ? null : request.Caption.Trim(),
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var result = await _postService.CreatePostAsync(userId, request);
 
-        _context.Posts.Add(post);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(Posts), new { id = post.Id }, new
+        if (result != null)
         {
-            id = post.Id,
-            userId = post.UserId,
-            photoUrl = post.PhotoUrl,
-            caption = post.Caption,
-            createdAt = post.CreatedAt,
-            updatedAt = post.UpdatedAt
-        });
+            return Ok();
+        } else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        //return Ok(result);
     }
 
 }

@@ -55,6 +55,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<JwtService>();
 
+builder.Services.AddScoped<FileStorageService>();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options =>

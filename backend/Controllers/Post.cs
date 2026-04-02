@@ -13,9 +13,12 @@ namespace Backend.Controllers;
 public class PostController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    public PostController(ApplicationDbContext context)
+
+    private readonly FileStorageService _fileStorage;
+    public PostController(ApplicationDbContext context, FileStorageService fileStorage)
     {
         _context = context;
+        _fileStorage = fileStorage;
     }
 
     // Incoming POST body for creating a post.
@@ -106,25 +109,9 @@ public class PostController : ControllerBase
     // The server saves the file to wwwroot/uploads and sets photoUrl from the saved path.
     [Authorize]
     [HttpPost("")]
-    public async Task<IActionResult> Posts([FromForm] CreatePostRequest request, IFormFile file)
+    public async Task<IActionResult> Posts([FromForm] CreatePostRequest request, [FromForm] IFormFile file)
     {
-        if (file == null || file.Length == 0)
-            return BadRequest(new { error = "Image file is required" });
-
-        // Could validate file type/size here (jpg/png etc.)
-        var uploadsFolder = Path.Combine("wwwroot", "uploads");
-        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-        var extension = Path.GetExtension(file.FileName);
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var localPath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(localPath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        var photoUrl = $"/uploads/{fileName}";
+        var photoUrl = await _fileStorage.Create(file);
 
         var userId = User.GetUserId();
 

@@ -11,9 +11,11 @@ namespace Backend.Controllers;
 public class ProfileController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    public ProfileController(ApplicationDbContext context)
+    private readonly FileStorageService _fileStorage;
+    public ProfileController(ApplicationDbContext context, FileStorageService fileStorage)
     {
         _context = context;
+        _fileStorage = fileStorage;
     }
 
     [Authorize]
@@ -63,41 +65,12 @@ public class ProfileController : ControllerBase
     [HttpPost("update/profile-image")]
     public async Task<IActionResult> UploadProfileImage(IFormFile file)
     {
-        if (file == null || file.Length == 0) return BadRequest("No File");
-
         var userId = User.GetUserId();
         var user = await _context.Users.FindAsync(userId);
 
         if (user == null) return NotFound();
 
-        // Delete old file if exists and is still under uploads
-        if (!string.IsNullOrWhiteSpace(user.ProfilePictureUrl))
-        {
-            var currentUrl = user.ProfilePictureUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-            var currentPath = Path.Combine("wwwroot", currentUrl);
-
-            if (System.IO.File.Exists(currentPath))
-            {
-                try
-                {
-                    System.IO.File.Delete(currentPath);
-                }
-                catch
-                {
-                    // fail silently, we don't want upload to fail if delete can't happen
-                }
-            }
-        }
-
-        var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var path = Path.Combine("wwwroot/uploads", filename);
-
-        using (var stream = new FileStream(path, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        var imageUrl = $"/uploads/{filename}";
+        var imageUrl = await _fileStorage.Update(file, user.ProfilePictureUrl);
         user.ProfilePictureUrl = imageUrl;
 
         await _context.SaveChangesAsync();

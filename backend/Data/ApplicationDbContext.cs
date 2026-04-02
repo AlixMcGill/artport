@@ -23,6 +23,33 @@ namespace Backend.Data
                 entity.Property(u => u.Bio).HasColumnName("bio");
                 entity.Property(u => u.ProfilePictureUrl).HasColumnName("profile_picture_url");
             });
+
+            modelBuilder.Entity<Post>(entity =>
+            {
+                entity.Property(u => u.Id).HasColumnName("id");
+                entity.Property(u => u.UserId).HasColumnName("user_id");
+                entity.Property(u => u.PhotoUrl).HasColumnName("image_url");
+                entity.Property(u => u.PhotoUrl).HasColumnName("image_url");
+                entity.Property(u => u.Caption).HasColumnName("caption");
+                entity.Property(u => u.CreatedAt).HasColumnName("created_at");
+                entity.Property(u => u.UpdatedAt).HasColumnName("updated_at");
+            });
+
+            modelBuilder.Entity<Like>(entity =>
+            {
+                entity.Property(u => u.Id).HasColumnName("id");
+                entity.Property(u => u.PostId).HasColumnName("post_id");
+                entity.Property(u => u.CreatedAt).HasColumnName("created_at");
+            });
+
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.Property(u => u.Id).HasColumnName("id");
+                entity.Property(u => u.PostId).HasColumnName("post_id");
+                entity.Property(u => u.UserId).HasColumnName("user_id");
+                entity.Property(u => u.Content).HasColumnName("content");
+                entity.Property(u => u.CreatedAt).HasColumnName("created_at");
+            });
         }
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Post> Posts { get; set; } = null!;

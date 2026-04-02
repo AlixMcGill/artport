@@ -17,6 +17,8 @@ namespace Backend.Models
         [Required, MaxLength(2083)]
         public string PhotoUrl { get; set; } = null!;
 
+        public string? Caption {get; set;}
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

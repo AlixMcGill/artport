@@ -26,9 +26,9 @@ namespace Backend.Data
 
             modelBuilder.Entity<Post>(entity =>
             {
+                entity.ToTable("posts");
                 entity.Property(u => u.Id).HasColumnName("id");
                 entity.Property(u => u.UserId).HasColumnName("user_id");
-                entity.Property(u => u.PhotoUrl).HasColumnName("image_url");
                 entity.Property(u => u.PhotoUrl).HasColumnName("image_url");
                 entity.Property(u => u.Caption).HasColumnName("caption");
                 entity.Property(u => u.CreatedAt).HasColumnName("created_at");
@@ -37,6 +37,7 @@ namespace Backend.Data
 
             modelBuilder.Entity<Like>(entity =>
             {
+                entity.ToTable("likes");
                 entity.Property(u => u.Id).HasColumnName("id");
                 entity.Property(u => u.PostId).HasColumnName("post_id");
                 entity.Property(u => u.CreatedAt).HasColumnName("created_at");
@@ -44,6 +45,7 @@ namespace Backend.Data
 
             modelBuilder.Entity<Comment>(entity =>
             {
+                entity.ToTable("comments");
                 entity.Property(u => u.Id).HasColumnName("id");
                 entity.Property(u => u.PostId).HasColumnName("post_id");
                 entity.Property(u => u.UserId).HasColumnName("user_id");

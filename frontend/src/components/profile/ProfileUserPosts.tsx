@@ -42,7 +42,7 @@ export default function ProfileUserPosts() {
             }
 
             const data = await res.json();
-            setPosts(data);
+            setPosts(data.posts);
         } catch (err) {
             console.error(err);
             setError("Failed to load user posts");

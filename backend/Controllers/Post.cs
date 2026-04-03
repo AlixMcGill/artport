@@ -13,13 +13,9 @@ namespace Backend.Controllers;
 [Route("api/[controller]")]
 public class PostController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    private readonly FileStorageService _fileStorage;
     private readonly PostService _postService;
-    public PostController(ApplicationDbContext context, FileStorageService fileStorage, PostService postService)
+    public PostController(PostService postService)
     {
-        _context = context;
-        _fileStorage = fileStorage;
         _postService = postService;
     }
 
@@ -32,36 +28,20 @@ public class PostController : ControllerBase
     // Returns the latest posts sorted by creation date descending (newest first).
     // Optional `limit` query parameter controls number of posts (defaults to 20, max 100).
     [Authorize]
-    [HttpGet("")]
-    public async Task<IActionResult> Posts([FromQuery] int limit = 20)
-    {
-        if (limit <= 0 || limit > 100) limit = 20;
+    [HttpGet("feed")]
+    public async Task<IActionResult> Posts([FromQuery] GetPostsQueryDto query)
+    {        
+        var result = await _postService.GetFeedPostsAsync(query);
 
-        var posts = await _context.Posts
-            .Include(p => p.User)
-            .Include(p => p.Likes)
-            .Include(p => p.Comments)
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(limit)
-            .Select(p => new
-            {
-                id = p.Id,
-                user = new
-                {
-                    id = p.UserId,
-                    username = p.User.Username,
-                    profilePictureUrl = p.User.ProfilePictureUrl
-                },
-                photoUrl = p.PhotoUrl,
-                caption = p.Caption,
-                createdAt = p.CreatedAt,
-                updatedAt = p.UpdatedAt,
-                likesCount = p.Likes.Count,
-                commentsCount = p.Comments.Count
-            })
-            .ToListAsync();
+        if (result != null)
+        {
+            return Ok(result);
+        } 
+        else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
-        return Ok(posts);
     }
 
     // GET api/post/user?userId={id}&limit={limit}
@@ -69,38 +49,20 @@ public class PostController : ControllerBase
     // If userId is not provided, defaults to authenticated user.
     [Authorize]
     [HttpGet("user")]
-    public async Task<IActionResult> PostsByUser([FromQuery] int? userId, [FromQuery] int limit = 20)
+    public async Task<IActionResult> PostsByUser([FromQuery] GetPostsQueryDto query)
     {
-        if (limit <= 0 || limit > 100) limit = 20;
+        var targetUserId = User.GetUserId();
 
-        var targetUserId = userId ?? User.GetUserId();
+        var result = await _postService.GetPostsAsync(targetUserId, query);
 
-        var posts = await _context.Posts
-            .Where(p => p.UserId == targetUserId)
-            .Include(p => p.User)
-            .Include(p => p.Likes)
-            .Include(p => p.Comments)
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(limit)
-            .Select(p => new
-            {
-                id = p.Id,
-                user = new
-                {
-                    id = p.UserId,
-                    username = p.User.Username,
-                    profilePictureUrl = p.User.ProfilePictureUrl
-                },
-                photoUrl = p.PhotoUrl,
-                caption = p.Caption,
-                createdAt = p.CreatedAt,
-                updatedAt = p.UpdatedAt,
-                likesCount = p.Likes.Count,
-                commentsCount = p.Comments.Count
-            })
-            .ToListAsync();
-
-        return Ok(posts);
+        if (result != null)
+        {
+            return Ok(result);
+        } 
+        else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     // POST api/post
@@ -120,7 +82,8 @@ public class PostController : ControllerBase
         if (result != null)
         {
             return Ok();
-        } else
+        } 
+        else
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }

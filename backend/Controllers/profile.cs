@@ -10,71 +10,53 @@ namespace Backend.Controllers;
 [Route("api/[controller]")]
 public class ProfileController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    private readonly FileStorageService _fileStorage;
-    public ProfileController(ApplicationDbContext context, FileStorageService fileStorage)
+    private readonly ProfileService _profileService;
+    public ProfileController(ProfileService profileService)
     {
-        _context = context;
-        _fileStorage = fileStorage;
+        _profileService = profileService;
     }
 
+    // /api/profile/profile
+    //      ^       ^        Duplicate is weird not restful
+    // Return the users profile data for dashboard
+    // takes jwt
+    // returns username, bio, and url for profile image
     [Authorize]
     [HttpGet("profile")]
-    public async Task<IActionResult> Profile()
+    public async Task<ActionResult<GetProfile>> Profile()
     {
-        // Get user id from the token
         var userId = User.GetUserId();
-
-        var user = await _context.Users
-        .Where(u => u.Id == userId)
-        .Select(u => new
-        {
-            username = u.Username,
-            bio = u.Bio,
-            profilePictureUrl = u.ProfilePictureUrl
-        }).FirstOrDefaultAsync();
-
+        var user = await _profileService.getProfileData(userId);
         if (user == null) return NotFound();
-
         return Ok(user);
     }
 
+    // /api/profile/update
+    // takes jwt and updated username, and bio
+    // returns updated username, and bio for frontend to validate data
     [Authorize]
     [HttpPut("update")]
-    public async Task<IActionResult> Update([FromBody] GetProfile dto)
+    public async Task<ActionResult<GetProfile>> Update([FromBody] GetProfile dto)
     {
+        // Prob not a good idea to use the same dto for input and output
         var userId = User.GetUserId();
-        var user = await _context.Users.FindAsync(userId);
-
-        if (user == null) return NotFound();
-
-        user.Username = dto.Username;
-        user.Bio = dto.Bio;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new
-        {
-            username = user.Username,
-            bio = user.Bio,
-            profilePictureUrl = user.ProfilePictureUrl
-        });
+        var updatedUser = await _profileService.UpdateProfile(userId, dto);
+        if (updatedUser == null) return NotFound();
+        return updatedUser;
     }
 
+    // /api/update/profile-image
+    // takes jwt and new profile image
+    // writes new profile image to wwwroot/uploads, removes old profile image from directory
+    // returns new url for profile image
     [Authorize]
     [HttpPost("update/profile-image")]
-    public async Task<IActionResult> UploadProfileImage(IFormFile file)
+    //   ^    could not decern between POST and PUT
+    public async Task<ActionResult<ProfileImageUrlResponseDto>> UploadProfileImage(IFormFile file)
     {
         var userId = User.GetUserId();
-        var user = await _context.Users.FindAsync(userId);
-
-        if (user == null) return NotFound();
-
-        var imageUrl = await _fileStorage.Update(file, user.ProfilePictureUrl);
-        user.ProfilePictureUrl = imageUrl;
-
-        await _context.SaveChangesAsync();
-
+        var imageUrl = _profileService.WriteProfileImage(file, userId);
+        if (imageUrl == null) return NotFound();
         return Ok(new { profilePictureUrl = imageUrl });
     }
 }

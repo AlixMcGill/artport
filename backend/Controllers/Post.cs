@@ -20,20 +20,16 @@ public class PostController : ControllerBase
     }
 
     // Incoming POST body for creating a post.
-    // `file` must be sent via multipart/form-data as an IFormFile.
-    // `caption` is optional.
     public record CreatePostRequest(string? Caption);
 
-    // GET api/post
-    // Returns the latest posts sorted by creation date descending (newest first).
-    // Optional `limit` query parameter controls number of posts (defaults to 20, max 100).
+    // GET api/post/feed
     [Authorize]
     [HttpGet("feed")]
     public async Task<IActionResult> Posts([FromQuery] GetPostsQueryDto query)
     {        
         var result = await _postService.GetFeedPostsAsync(query);
 
-        if (result != null)
+        if (result != null) // there is def a better way to do this
         {
             return Ok(result);
         } 
@@ -44,9 +40,7 @@ public class PostController : ControllerBase
 
     }
 
-    // GET api/post/user?userId={id}&limit={limit}
-    // Returns the posts by the specified userId in newest-first order.
-    // If userId is not provided, defaults to authenticated user.
+    // GET api/post/user
     [Authorize]
     [HttpGet("user")]
     public async Task<IActionResult> PostsByUser([FromQuery] GetPostsQueryDto query)
@@ -67,10 +61,6 @@ public class PostController : ControllerBase
 
     // POST api/post
     // Creates a new post for the authenticated user.
-    // Must be multipart/form-data with:
-    // - file: image file (required)
-    // - caption: optional text
-    // The server saves the file to wwwroot/uploads and sets photoUrl from the saved path.
     [Authorize]
     [HttpPost("")]
     public async Task<IActionResult> Posts([FromForm] CreatePostRequestDto request)

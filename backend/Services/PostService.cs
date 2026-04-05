@@ -16,28 +16,17 @@ public class PostService
 
     public async Task<GetPostsResponseDto> GetFeedPostsAsync(GetPostsQueryDto query)
     {
-        var posts = await _context.Posts
-            .Include(p => p.User)
-            .Include(p => p.Likes)
-            .Include(p => p.Comments)
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(query.Limit)
-            .Select(p => new PostsDto
-            {
-                    Id = p.Id,
-                    User = new UserDto
-                    {
-                        Id = p.UserId,
-                        Username = p.User.Username,
-                        ProfilePictureUrl = p.User.ProfilePictureUrl
-                    },
-                    PhotoUrl = p.PhotoUrl,
-                    Caption = p.Caption,
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                    LikesCount = p.Likes.Count,
-                    CommentsCount = p.Comments.Count
-            }).ToListAsync();
+        List<PostsDto> posts;
+
+        switch (query.Sort)
+        {
+            case "trending":
+                posts = await GetTrendingFeedAsync(query);
+                break;
+            default:
+                posts = await GetLastestFeedAsync(query);
+                break;
+        }
 
             return new GetPostsResponseDto
             {
@@ -56,7 +45,7 @@ public class PostService
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
                 .OrderByDescending(p => p.CreatedAt)
-                .Take(query.Limit)
+                .Take(query.PageSize)
                 .Select(p => new PostsDto
                 {
                     Id = p.Id,
@@ -106,5 +95,58 @@ public class PostService
             CreatedAt = post.CreatedAt,
             UpdatedAt = post.UpdatedAt
         };
+    }
+
+    private async Task<List<PostsDto>> GetLastestFeedAsync(GetPostsQueryDto query)
+    {
+        var posts = await _context.Posts
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((query.Page -1) * query.PageSize)
+            .Take(query.PageSize)
+            .Select(p => new PostsDto
+            {
+                    Id = p.Id,
+                    User = new UserDto
+                    {
+                        Id = p.UserId,
+                        Username = p.User.Username,
+                        ProfilePictureUrl = p.User.ProfilePictureUrl
+                    },
+                    PhotoUrl = p.PhotoUrl,
+                    Caption = p.Caption,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                    LikesCount = p.Likes.Count,
+                    CommentsCount = p.Comments.Count
+            }).ToListAsync();
+
+        return posts;
+    }
+
+    private async Task<List<PostsDto>> GetTrendingFeedAsync(GetPostsQueryDto query)
+    {
+        var posts = await _context.Posts
+            .OrderByDescending(p => p.Comments.Count)
+            .ThenByDescending(p => p.Likes.Count)
+            .Skip((query.Page -1) * query.PageSize)
+            .Take(query.PageSize)
+            .Select(p => new PostsDto
+            {
+                    Id = p.Id,
+                    User = new UserDto
+                    {
+                        Id = p.UserId,
+                        Username = p.User.Username,
+                        ProfilePictureUrl = p.User.ProfilePictureUrl
+                    },
+                    PhotoUrl = p.PhotoUrl,
+                    Caption = p.Caption,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                    LikesCount = p.Likes.Count,
+                    CommentsCount = p.Comments.Count
+            }).ToListAsync();
+
+            return posts;
     }
 }

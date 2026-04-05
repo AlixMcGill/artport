@@ -16,7 +16,7 @@ public class ProfileController : ControllerBase
         _profileService = profileService;
     }
 
-    // /api/profile/profile
+    // GET /api/profile/profile
     //      ^       ^        Duplicate is weird not restful
     // Return the users profile data for dashboard
     // takes jwt
@@ -31,7 +31,7 @@ public class ProfileController : ControllerBase
         return Ok(user);
     }
 
-    // /api/profile/update
+    // PUT /api/profile/update
     // takes jwt and updated username, and bio
     // returns updated username, and bio for frontend to validate data
     [Authorize]
@@ -45,7 +45,7 @@ public class ProfileController : ControllerBase
         return updatedUser;
     }
 
-    // /api/update/profile-image
+    // POST /api/update/profile-image
     // takes jwt and new profile image
     // writes new profile image to wwwroot/uploads, removes old profile image from directory
     // returns new url for profile image
@@ -57,6 +57,6 @@ public class ProfileController : ControllerBase
         var userId = User.GetUserId();
         var imageUrl = _profileService.WriteProfileImage(file, userId);
         if (imageUrl == null) return NotFound();
-        return Ok(new { profilePictureUrl = imageUrl });
+        return Ok(new { ProfilePictureUrl = imageUrl });
     }
 }

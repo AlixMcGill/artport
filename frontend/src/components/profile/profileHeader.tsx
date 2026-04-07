@@ -23,7 +23,7 @@ export default function ProfileHeader() {
         const fetchProfile = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`${apiBaseUrl}/api/profile/profile`, {
+                const res = await fetch(`${apiBaseUrl}/api/profile`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -52,7 +52,7 @@ export default function ProfileHeader() {
 
         try {
             setSaving(true);
-            const res = await fetch(`${apiBaseUrl}/api/profile/update`, {
+            const res = await fetch(`${apiBaseUrl}/api/profile`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -91,7 +91,7 @@ export default function ProfileHeader() {
             const formData = new FormData();
             formData.append("file", file);
 
-            const res = await fetch(`${apiBaseUrl}/api/profile/update/profile-image`, {
+            const res = await fetch(`${apiBaseUrl}/api/profile/profile-image`, {
                 method: "POST",
                 credentials: "include",
                 body: formData,

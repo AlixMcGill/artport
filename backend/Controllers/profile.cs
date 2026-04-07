@@ -16,13 +16,12 @@ public class ProfileController : ControllerBase
         _profileService = profileService;
     }
 
-    // GET /api/profile/profile
-    //      ^       ^        Duplicate is weird not restful
+    // GET /api/profile
     // Return the users profile data for dashboard
     // takes jwt
     // returns username, bio, and url for profile image
     [Authorize]
-    [HttpGet("profile")]
+    [HttpGet("")]
     public async Task<ActionResult<GetProfile>> Profile()
     {
         var userId = User.GetUserId();
@@ -31,11 +30,11 @@ public class ProfileController : ControllerBase
         return Ok(user);
     }
 
-    // PUT /api/profile/update
+    // PUT /api/profile
     // takes jwt and updated username, and bio
     // returns updated username, and bio for frontend to validate data
     [Authorize]
-    [HttpPut("update")]
+    [HttpPut("")]
     public async Task<ActionResult<GetProfile>> Update([FromBody] GetProfile dto)
     {
         // Prob not a good idea to use the same dto for input and output
@@ -45,12 +44,12 @@ public class ProfileController : ControllerBase
         return updatedUser;
     }
 
-    // POST /api/update/profile-image
+    // POST /api/profile/image
     // takes jwt and new profile image
     // writes new profile image to wwwroot/uploads, removes old profile image from directory
     // returns new url for profile image
     [Authorize]
-    [HttpPost("update/profile-image")]
+    [HttpPost("profile-image")]
     //   ^    could not decern between POST and PUT
     public async Task<ActionResult<ProfileImageUrlResponseDto>> UploadProfileImage(IFormFile file)
     {

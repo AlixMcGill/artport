@@ -61,6 +61,8 @@ builder.Services.AddScoped<ProfileService>();
 
 builder.Services.AddScoped<PostService>();
 
+builder.Services.AddScoped<CommentService>();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options =>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CommentsModal from "../components/CommentsModal";
 
 type UserInfo = {
     id: number;
@@ -26,19 +27,36 @@ export default function Feed() {
     const [posts, setPosts] = useState<FeedPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
     const navigate = useNavigate();
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
+        fetchUserInfo();
         fetchFeedPosts();
     }, []);
+
+    const fetchUserInfo = () => {
+        try {
+            const storedId = localStorage.getItem("id");
+            if (storedId) {
+                setUserId(parseInt(storedId, 10));
+                console.log("User ID from localStorage:", storedId);
+            } else {
+                console.warn("No user ID found in localStorage");
+            }
+        } catch (err) {
+            console.error("Failed to get user info:", err);
+        }
+    };
 
     const fetchFeedPosts = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const res = await fetch("http://localhost:5094/api/post/feed", {
+            const res = await fetch(`${apiBaseUrl}/api/post/feed`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -94,9 +112,31 @@ export default function Feed() {
                             <span style={{ marginLeft: "15px" }}>{post.commentsCount} comments</span>
                             <span style={{ marginLeft: "15px" }}>{new Date(post.createdAt).toLocaleDateString()}</span>
                         </div>
+                        <button
+                            onClick={() => setSelectedPostId(post.id)}
+                            style={{
+                                marginTop: "10px",
+                                padding: "8px 16px",
+                                backgroundColor: "#007bff",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "0.9em",
+                            }}
+                        >
+                            View Comments
+                        </button>
                     </div>
                 ))}
             </div>
+            <CommentsModal
+                postId={selectedPostId || 0}
+                isOpen={selectedPostId !== null}
+                onClose={() => setSelectedPostId(null)}
+                userId={userId}
+                apiBaseUrl={apiBaseUrl}
+            />
         </div>
     );
 }

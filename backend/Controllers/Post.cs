@@ -29,15 +29,9 @@ public class PostController : ControllerBase
     {        
         var result = await _postService.GetFeedPostsAsync(query);
 
-        if (result != null) // there is def a better way to do this
-        {
-            return Ok(result);
-        } 
-        else
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        if (result == null) return NotFound();
 
+        return Ok(result);
     }
 
     // GET api/post/user
@@ -49,14 +43,9 @@ public class PostController : ControllerBase
 
         var result = await _postService.GetPostsAsync(targetUserId, query);
 
-        if (result != null)
-        {
-            return Ok(result);
-        } 
-        else
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        if (result == null) return NotFound();
+
+        return Ok(result);
     }
 
     // POST api/post
@@ -69,16 +58,8 @@ public class PostController : ControllerBase
 
         var result = await _postService.CreatePostAsync(userId, request);
 
-        if (result != null)
-        {
-            return Ok();
-        } 
-        else
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        if (result == null) return NotFound();
 
-        //return Ok(result);
+        return Ok(result);
     }
-
 }

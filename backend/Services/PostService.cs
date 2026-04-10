@@ -2,16 +2,19 @@ using Backend.Data;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 public class PostService
 {
     private readonly ApplicationDbContext _context;
     private readonly FileStorageService _fileStorage;
+    private readonly IMemoryCache _cache;
 
-    public PostService(ApplicationDbContext context, FileStorageService fileStorage)
+    public PostService(ApplicationDbContext context, FileStorageService fileStorage, IMemoryCache cache)
     {
         _context = context;
         _fileStorage = fileStorage;
+        _cache = cache;
     }
 
     public async Task<GetPostsResponseDto> GetFeedPostsAsync(GetPostsQueryDto query)
@@ -99,6 +102,36 @@ public class PostService
 
     private async Task<List<PostsDto>> GetLastestFeedAsync(GetPostsQueryDto query)
     {
+        const int maxCachedPosts = 100;
+        const int cacheExperationInMinutes = 10;
+
+        int skip = (query.Page - 1) * query.PageSize;
+
+        if (skip >= maxCachedPosts)
+        {
+            return await QueryLastestFeedFromDbAsync(query);
+        }
+
+        var cacheKey = "trending:top100";
+
+        var cached = await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(cacheExperationInMinutes);
+
+            return await QueryLastestFeedFromDbAsync(new GetPostsQueryDto
+            {
+                Page = 1,
+                PageSize = maxCachedPosts
+            });
+        });
+
+        return (cached ?? new List<PostsDto>())
+            .Skip(skip)
+            .Take(query.PageSize)
+            .ToList();
+    }
+    private async Task<List<PostsDto>> QueryLastestFeedFromDbAsync(GetPostsQueryDto query)
+    {
         var posts = await _context.Posts
             .OrderByDescending(p => p.CreatedAt)
             .Skip((query.Page -1) * query.PageSize)
@@ -124,6 +157,36 @@ public class PostService
     }
 
     private async Task<List<PostsDto>> GetTrendingFeedAsync(GetPostsQueryDto query)
+    {
+        const int maxCachedPosts = 100;
+        const int cacheExperationInMinutes = 10;
+
+        int skip = (query.Page - 1) * query.PageSize;
+
+        if (skip >= maxCachedPosts)
+        {
+            return await QueryTrendingFeedFromDbAsync(query);
+        }
+
+        var cacheKey = "trending:top100";
+
+        var cached = await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(cacheExperationInMinutes);
+
+            return await QueryTrendingFeedFromDbAsync(new GetPostsQueryDto
+            {
+                Page = 1,
+                PageSize = maxCachedPosts
+            });
+        });
+
+        return (cached ?? new List<PostsDto>())
+            .Skip(skip)
+            .Take(query.PageSize)
+            .ToList();
+    }
+    private async Task<List<PostsDto>> QueryTrendingFeedFromDbAsync(GetPostsQueryDto query)
     {
         var posts = await _context.Posts
             .OrderByDescending(p => p.Comments.Count)

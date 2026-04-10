@@ -63,6 +63,8 @@ builder.Services.AddScoped<PostService>();
 
 builder.Services.AddScoped<CommentService>();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options =>

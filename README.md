@@ -57,8 +57,10 @@ Authenticate and login a user.
 
 #### GET `/api/post/feed`
 Get the feed of posts from users the authenticated user follows.
+caches top 100 posts using IMemoryCache on local machine for latest and trending feeds.
 
 **Query Parameters:**
+- `sort` (optional, default: latest, sort=trending)
 - `page` (optional, default: 1)
 - `pageSize` (optional, default: 20)
 

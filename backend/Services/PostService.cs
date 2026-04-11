@@ -27,7 +27,7 @@ public class PostService
                 posts = await GetTrendingFeedAsync(query);
                 break;
             default:
-                posts = await GetLastestFeedAsync(query);
+                posts = await GetLatestFeedAsync(query);
                 break;
         }
 
@@ -100,10 +100,10 @@ public class PostService
         };
     }
 
-    private async Task<List<PostsDto>> GetLastestFeedAsync(GetPostsQueryDto query)
+    private async Task<List<PostsDto>> GetLatestFeedAsync(GetPostsQueryDto query)
     {
         const int maxCachedPosts = 100;
-        const int cacheExperationInMinutes = 10;
+        const int cacheExperationInMinutes = 1;
 
         int skip = (query.Page - 1) * query.PageSize;
 
@@ -112,7 +112,7 @@ public class PostService
             return await QueryLastestFeedFromDbAsync(query);
         }
 
-        var cacheKey = "trending:top100";
+        var cacheKey = "latest:top100";
 
         var cached = await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
@@ -159,7 +159,7 @@ public class PostService
     private async Task<List<PostsDto>> GetTrendingFeedAsync(GetPostsQueryDto query)
     {
         const int maxCachedPosts = 100;
-        const int cacheExperationInMinutes = 10;
+        const int cacheExperationInMinutes = 1;
 
         int skip = (query.Page - 1) * query.PageSize;
 

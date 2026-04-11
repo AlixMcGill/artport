@@ -30,5 +30,4 @@ public class LikeController : ControllerBase
 
         return Ok();
     }
-
 } 

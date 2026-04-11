@@ -63,6 +63,8 @@ builder.Services.AddScoped<PostService>();
 
 builder.Services.AddScoped<CommentService>();
 
+builder.Services.AddScoped<LikeService>();
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddOpenApi();

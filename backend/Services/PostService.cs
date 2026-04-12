@@ -89,6 +89,11 @@ public class PostService
         _context.Posts.Add(post); // Add to the database
         await _context.SaveChangesAsync(); // save changes to database
 
+
+        // invalidate cache as a user has created a new post
+        _cache.Remove("latest:top100");
+        _cache.Remove("trending:top100");
+
         return new CreatePostResponseDto // create data response
         {
             Id = post.Id,

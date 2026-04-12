@@ -38,7 +38,9 @@ namespace Backend.Data
             modelBuilder.Entity<Like>(entity =>
             {
                 entity.ToTable("likes");
-                entity.Property(u => u.Id).HasColumnName("id");
+                //entity.Property(u => u.Id).HasColumnName("id");
+                entity.HasKey(l => new {l.UserId, l.PostId});
+                entity.Property(u => u.UserId).HasColumnName("user_id");
                 entity.Property(u => u.PostId).HasColumnName("post_id");
                 entity.Property(u => u.CreatedAt).HasColumnName("created_at");
             });
